@@ -3,7 +3,6 @@ package bg.egov;
 import java.util.TimeZone;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportResource;
@@ -51,7 +50,7 @@ public class TxCoordinatorApplication {
 		return couchbaseCluster.openBucket("tx-coordinator"); //TODO externalize
 	}
 	
-    public static void main(String[] args) {
-        SpringApplication.run(TxCoordinatorApplication.class, args);
+	public static void main(String[] args) throws Exception {
+        //SpringApplication.run(TxCoordinatorApplication.class, args);
     }
 }

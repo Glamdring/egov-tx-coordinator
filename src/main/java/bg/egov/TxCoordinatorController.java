@@ -1,14 +1,24 @@
 package bg.egov;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.Signature;
+import java.security.SignatureException;
+import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.BaseEncoding;
 
 @Controller
 @RequestMapping("/transaction")
@@ -17,12 +27,17 @@ public class TxCoordinatorController {
 	@Autowired
 	private TxDao dao;
 	
+	@Autowired
+	private CertificateFetcher certificateFetcher;
+	
 	@RequestMapping("/create")
 	@ResponseBody
-	public TxMetadata createTransaction(TxRequest request) {
+	public TxMetadata createTransaction(TxRequest request, @RequestHeader("X-Signature") String signature,
+			@RequestHeader("X-Signature-Algorithm") String signatureAlgorithm,
+			HttpEntity<String> entity) {
 
 		validateClientId(request.getClientId());
-		validateAuthenticationAndSignature(request.getClientId(), request.getContent(), request.getSignedContent(), request.getCertificate());
+		validateAuthenticationAndSignature(request.getClientId(), entity.getBody(), signature, signatureAlgorithm);
 		validateAccess(request);
 
 		TxMetadata response = new TxMetadata();
@@ -65,7 +80,20 @@ public class TxCoordinatorController {
 		return true;
 	}
 
-	private void validateAuthenticationAndSignature(String clientId, String content, String signedContent, String certificate) {
+	private void validateAuthenticationAndSignature(String clientId, String requestBody, String signature, String signatureAlgorithm) {
+		X509Certificate certificate = certificateFetcher.getCertificate(clientId);
+		try {
+			Signature sig = Signature.getInstance(signatureAlgorithm);
+			sig.initVerify(certificate.getPublicKey());
+			sig.update(requestBody.getBytes(Charsets.UTF_8));
+			if (!sig.verify(BaseEncoding.base64().decode(signature))) {
+				throw new IllegalArgumentException("Signature is invalid");
+			}
+		} catch (NoSuchAlgorithmException | SignatureException e) {
+			throw new IllegalArgumentException(e);
+		} catch (InvalidKeyException e) {
+			throw new IllegalStateException(e);
+		}
 		// OCSP/CRL, check signature
 	}
 
