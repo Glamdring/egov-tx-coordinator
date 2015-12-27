@@ -12,8 +12,10 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -30,9 +32,9 @@ public class TxCoordinatorController {
 	@Autowired
 	private CertificateFetcher certificateFetcher;
 	
-	@RequestMapping("/create")
+	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	@ResponseBody
-	public TxMetadata createTransaction(TxRequest request, @RequestHeader("X-Signature") String signature,
+	public TxMetadata createTransaction(@RequestBody TxRequest request, @RequestHeader("X-Signature") String signature,
 			@RequestHeader("X-Signature-Algorithm") String signatureAlgorithm,
 			HttpEntity<String> entity) {
 
@@ -52,9 +54,9 @@ public class TxCoordinatorController {
 		return response;
 	}
 
-	@RequestMapping("/verify")
+	@RequestMapping(value = "/verify", method = RequestMethod.POST)
 	@ResponseBody
-	public boolean verifyTransaction(@RequestParam UUID txId, TxRequest request) {
+	public boolean verifyTransaction(@RequestParam UUID txId, @RequestBody TxRequest request) {
 
 		Tx tx = dao.get(txId);
 
