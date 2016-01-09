@@ -69,7 +69,7 @@ public class TxCoordinatorController {
 	
 	private void validateAccess(TxRequest request) {
 		if (request.getEndpointType() == EndpointType.DATA && !request.getRequestedDataFields().isEmpty()) {
-				if (!hasAccess(request.getClientId(), request.getRequestedDataFields())) {
+				if (!hasAccess(request.getClientId(), request.getServiceId(), request.getRequestedDataFields())) {
 					throw new IllegalArgumentException("No access to requested data"); //TODO change to a more structured error response
 				}
 		} else if (request.getEndpointType() == EndpointType.SERVICE && request.getRequestedEndpointUrl() != null){
@@ -77,8 +77,9 @@ public class TxCoordinatorController {
 		}
 	}
 
-	private boolean hasAccess(String clientId, Set<String> dataFields) {
+	private boolean hasAccess(String clientId, String serviceId, Set<String> dataFields) {
 		// call IISDA
+		// serviceId = id of the service for which the data is needed. 
 		return true;
 	}
 
