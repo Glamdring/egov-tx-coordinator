@@ -10,6 +10,8 @@ public class TxRequest {
 	private RequestType requestType;
 	private EndpointType endpointType;
 	private Set<String> requestedDataFields;
+	private String idType;
+	private String id;
 	private String requestedEndpointUrl;
 	private String callbackUrl;
 	private String requestingPerson;
@@ -83,6 +85,18 @@ public class TxRequest {
 	public void setServiceId(String serviceId) {
 		this.serviceId = serviceId;
 	}
+	public String getIdType() {
+		return idType;
+	}
+	public void setIdType(String idType) {
+		this.idType = idType;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -91,6 +105,8 @@ public class TxRequest {
 		result = prime * result + ((clientId == null) ? 0 : clientId.hashCode());
 		result = prime * result + ((destinationId == null) ? 0 : destinationId.hashCode());
 		result = prime * result + ((endpointType == null) ? 0 : endpointType.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((idType == null) ? 0 : idType.hashCode());
 		result = prime * result + ((originatingDocumentId == null) ? 0 : originatingDocumentId.hashCode());
 		result = prime * result + ((originatingDocumentType == null) ? 0 : originatingDocumentType.hashCode());
 		result = prime * result + ((requestType == null) ? 0 : requestType.hashCode());
@@ -126,6 +142,16 @@ public class TxRequest {
 			return false;
 		if (endpointType != other.endpointType)
 			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (idType == null) {
+			if (other.idType != null)
+				return false;
+		} else if (!idType.equals(other.idType))
+			return false;
 		if (originatingDocumentId == null) {
 			if (other.originatingDocumentId != null)
 				return false;
@@ -160,5 +186,4 @@ public class TxRequest {
 			return false;
 		return true;
 	}
-
 }
